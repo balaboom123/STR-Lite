@@ -3,7 +3,6 @@ import sys
 from typing import Iterable
 
 import torch
-import torch.nn.functional as F
 
 import util.lr_sched as lr_sched
 import util.misc as misc
@@ -40,10 +39,14 @@ def _build_decoder_io(labels, tokenizer, device):
     return tokenizer.build_decoder_inputs_from_text_ids(labels["text"], labels["lengths"], device=device)
 
 
+def _get_model_unwrapped(model):
+    """Unwrap DDP to access encode/decode methods."""
+    return model.module if hasattr(model, "module") else model
+
 def _compute_loss(model, criterion, images, labels, tokenizer, device, autocast_kwargs, mixup_alpha=0.0):
     images = _prepare_images_for_model(images, device)
 
-    with torch.cuda.amp.autocast(**autocast_kwargs):
+    with torch.amp.autocast("cuda", **autocast_kwargs):
         if mixup_alpha > 0.0 and images.size(0) > 1:
             perm = torch.randperm(images.size(0), device=device)
             lam = torch.distributions.Beta(mixup_alpha, mixup_alpha).sample().item()
@@ -57,16 +60,17 @@ def _compute_loss(model, criterion, images, labels, tokenizer, device, autocast_
             in_a, tgt_a, pad_a = _build_decoder_io(labels, tokenizer, device)
             in_b, tgt_b, pad_b = _build_decoder_io(labels_perm, tokenizer, device)
 
-            logits_a = model(mixed_images, tgt_input=in_a, tgt_key_padding_mask=pad_a)
-            logits_b = model(mixed_images, tgt_input=in_b, tgt_key_padding_mask=pad_b)
+            # Encode once, decode twice
+            unwrapped = _get_model_unwrapped(model)
+            memory = unwrapped.encode(mixed_images)
+            logits_a = unwrapped.decode(memory, tgt_input=in_a, tgt_key_padding_mask=pad_a)
+            logits_b = unwrapped.decode(memory, tgt_input=in_b, tgt_key_padding_mask=pad_b)
 
             loss_a = _seq_ce_loss(logits_a, tgt_a, criterion)
             loss_b = _seq_ce_loss(logits_b, tgt_b, criterion)
             loss = lam * loss_a + (1.0 - lam) * loss_b
 
-            # For logging/decoding use branch A.
             logits = logits_a
-            tgt_ids = tgt_a
         else:
             in_ids, tgt_ids, pad_mask = _build_decoder_io(labels, tokenizer, device)
             logits = model(images, tgt_input=in_ids, tgt_key_padding_mask=pad_mask)
@@ -158,7 +162,7 @@ def evaluate(data_loader, model, criterion, tokenizer, device, precision="fp16",
     rec_metric = RecMetric(valid_chars=tokenizer.character, is_lower=tokenizer.lower)
 
     for images, labels in metric_logger.log_every(data_loader, 20, header):
-        with torch.cuda.amp.autocast(**autocast_kwargs):
+        with torch.amp.autocast("cuda", **autocast_kwargs):
             images_norm = _prepare_images_for_model(images, device)
             in_ids, tgt_ids, pad_mask = _build_decoder_io(labels, tokenizer, device)
             logits = model(images_norm, tgt_input=in_ids, tgt_key_padding_mask=pad_mask)

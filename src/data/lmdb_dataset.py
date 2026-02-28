@@ -120,8 +120,6 @@ class LmdbDataset(_LmdbBase):
             randaugment_magnitude=randaugment_magnitude,
             randaugment_prob=randaugment_prob,
         )
-        self.mean = np.array([0.5, 0.5, 0.5])
-        self.std = np.array([0.5, 0.5, 0.5])
 
     def __getitem__(self, index):
         if index < 0 or index >= self._num_samples:

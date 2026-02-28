@@ -27,19 +27,6 @@ def _cfg_to_namespace(cfg: DictConfig) -> SimpleNamespace:
 
 
 def run(args: SimpleNamespace, cfg: DictConfig):
-    if int(args.max_label_length) != 25:
-        print(f"Override max_label_length {args.max_label_length} -> 25")
-    args.max_label_length = 25
-    if int(args.seed) != 0:
-        print(f"Override seed {args.seed} -> 0")
-    args.seed = 0
-    if str(args.device).lower() != "cuda":
-        print(f"Override device {args.device} -> cuda")
-    args.device = "cuda"
-    if str(getattr(args, "precision", "bf16")).lower() != "bf16":
-        print(f"Override precision {getattr(args, 'precision', None)} -> bf16")
-    args.precision = "bf16"
-
     misc.init_distributed_mode(args)
 
     print(f"job dir: {os.path.dirname(os.path.realpath(__file__))}")

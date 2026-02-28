@@ -237,7 +237,7 @@ class NativeScalerWithGradNormCount:
     state_dict_key = "amp_scaler"
 
     def __init__(self, enabled: bool = True):
-        self._scaler = torch.cuda.amp.GradScaler(enabled=torch.cuda.is_available() and enabled)
+        self._scaler = torch.amp.GradScaler("cuda", enabled=torch.cuda.is_available() and enabled)
 
     def __call__(
         self,
@@ -314,7 +314,7 @@ def load_model(args, model_without_ddp, optimizer=None, loss_scaler=None):
     if args.resume.startswith("https"):
         checkpoint = torch.hub.load_state_dict_from_url(args.resume, map_location="cpu", check_hash=True)
     else:
-        checkpoint = torch.load(args.resume, map_location="cpu")
+        checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
 
     model_without_ddp.load_state_dict(checkpoint["model"], strict=False)
     print(f"Resume checkpoint {args.resume}")

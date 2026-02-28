@@ -29,7 +29,7 @@ def _cfg_to_namespace(cfg: DictConfig) -> SimpleNamespace:
 
 
 def load_pretrained_mae_encoder(model, ckpt_path: str):
-    checkpoint = torch.load(ckpt_path, map_location="cpu")
+    checkpoint = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     state_dict = checkpoint.get("model", checkpoint)
 
     model_state = model.state_dict()
@@ -47,6 +47,12 @@ def load_pretrained_mae_encoder(model, ckpt_path: str):
         if target_key in model_state and model_state[target_key].shape == value.shape:
             load_state[target_key] = value
 
+    if len(load_state) == 0:
+        raise RuntimeError(
+            f"No encoder parameters loaded from {ckpt_path}. "
+            "Check that the checkpoint contains MAE encoder weights."
+        )
+
     msg = model.load_state_dict(load_state, strict=False)
     print(f"Loaded MAE encoder from {ckpt_path}")
     print(f"Loaded params: {len(load_state)}")
@@ -54,21 +60,8 @@ def load_pretrained_mae_encoder(model, ckpt_path: str):
 
 
 def run(args: SimpleNamespace, cfg: DictConfig):
-    if int(args.max_label_length) != 25:
-        print(f"Override max_label_length {args.max_label_length} -> 25")
-    args.max_label_length = 25
-    if int(args.seed) != 0:
-        print(f"Override seed {args.seed} -> 0")
-    args.seed = 0
-    if str(args.device).lower() != "cuda":
-        print(f"Override device {args.device} -> cuda")
-    args.device = "cuda"
-    if str(getattr(args, "precision", "bf16")).lower() != "bf16":
-        print(f"Override precision {getattr(args, 'precision', None)} -> bf16")
-    args.precision = "bf16"
-    if getattr(args, "eval_max_decode_len", None) != args.max_label_length:
-        print(f"Override eval_max_decode_len {getattr(args, 'eval_max_decode_len', None)} -> {args.max_label_length}")
-    args.eval_max_decode_len = args.max_label_length
+    if getattr(args, "eval_max_decode_len", None) is None:
+        args.eval_max_decode_len = args.max_label_length
 
     misc.init_distributed_mode(args)
 

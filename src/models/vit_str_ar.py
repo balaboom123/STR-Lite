@@ -236,7 +236,12 @@ class ViTSTRAR(nn.Module):
             x = self.decoder.norm(x)
         return x
 
-    def forward(self, images, tgt_input, tgt_key_padding_mask=None):
+    def encode(self, images):
+        """Encode images to memory. Use with decode() to avoid redundant encoding."""
+        return self._encode(images)
+
+    def decode(self, memory, tgt_input, tgt_key_padding_mask=None):
+        """Decode from pre-computed encoder memory."""
         if tgt_input is None:
             raise ValueError("tgt_input is required for Transformer decoding")
         if tgt_input.shape[1] > self.max_seq_len:
@@ -244,25 +249,31 @@ class ViTSTRAR(nn.Module):
                 f"tgt_input length {tgt_input.shape[1]} exceeds max_seq_len {self.max_seq_len}"
             )
 
-        memory = self._encode(images)
-
         seq_len = tgt_input.shape[1]
         positions = torch.arange(seq_len, device=tgt_input.device).unsqueeze(0)
         tgt = self.token_embed(tgt_input) + self.pos_embed(positions)
         tgt = self.dropout(tgt)
 
         tgt = tgt.transpose(0, 1)
-        memory = memory.transpose(0, 1)
+        mem = memory.transpose(0, 1)
 
-        decoded = self._run_decoder(tgt, memory, tgt_key_padding_mask=tgt_key_padding_mask)
+        decoded = self._run_decoder(tgt, mem, tgt_key_padding_mask=tgt_key_padding_mask)
         decoded = decoded.transpose(0, 1)
         decoded = self.decoder_norm(decoded)
         logits = self.output_proj(decoded)
         return logits
 
+    def forward(self, images, tgt_input, tgt_key_padding_mask=None):
+        memory = self.encode(images)
+        return self.decode(memory, tgt_input, tgt_key_padding_mask)
+
     @torch.no_grad()
     def greedy_decode(self, images, bos_id, eos_id, max_len=None):
         """Greedy autoregressive decoding for inference."""
+        was_training = self.training
+        if was_training:
+            self.eval()
+
         if max_len is None:
             max_len = self.max_seq_len
 
@@ -302,6 +313,8 @@ class ViTSTRAR(nn.Module):
             if finished.all():
                 break
 
+        if was_training:
+            self.train()
         return generated
 
 
