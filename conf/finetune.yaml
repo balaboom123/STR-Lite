@@ -1,0 +1,68 @@
+batch_size: 256
+epochs: 20
+accum_iter: 1
+
+model: vit_tiny_str_ar_patch4x8
+img_height: 32
+img_width: 128
+patch_size: [4, 8]
+drop_path: 0.0
+
+decoder_embed_dim: 192
+decoder_depth: 1
+decoder_num_heads: 12
+decoder_mlp_ratio: 4.0
+decoder_dropout: 0.1
+
+character_dict_path: util/EN_symbol_dict.txt
+lower: false
+use_space_char: false
+
+weight_decay: 0.01
+lr: 0.001
+blr: null
+min_lr: 1e-7
+warmup_epochs: 2
+
+layer_decay: 0.75
+no_layer_decay: false
+mixup: 0.0
+
+eval_max_decode_len: ${max_label_length}
+
+train_data_path:
+  - /mnt/d/Dataset/lmdb_release/train/real
+val_data_path:
+  - /mnt/d/Dataset/lmdb_release/train/real
+test_data_path:
+  - /mnt/d/Dataset/lmdb_release/test/real
+max_label_length: 25
+randaugment_layers: 2
+randaugment_magnitude: 10
+randaugment_prob: 0.5
+readahead: true
+
+pretrained_mae: ""
+output_dir: null
+log_dir: null
+device: cuda
+precision: bf16
+seed: 0
+resume: ""
+start_epoch: 0
+save_best_only: false
+
+num_workers: 8
+pin_mem: true
+
+world_size: 1
+local_rank: -1
+dist_on_itp: false
+dist_url: env://
+
+hydra:
+  run:
+    dir: ./output/finetune/${now:%Y%m%d_%H%M%S}
+  output_subdir: .hydra
+  job:
+    chdir: false

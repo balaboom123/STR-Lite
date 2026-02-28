@@ -1,0 +1,49 @@
+batch_size: 1024
+epochs: 400
+accum_iter: 1
+
+model: mae_vit_tiny_patch4_str
+img_height: 32
+img_width: 128
+patch_size: [4, 8]
+drop_path: 0.0
+
+mask_ratio: 0.75
+norm_pix_loss: true
+
+weight_decay: 0.05
+lr: null
+blr: 0.001
+min_lr: 1e-7
+warmup_epochs: 4
+
+data_path:
+  - /mnt/d/Dataset/lmdb_release/train/real
+max_label_length: 25
+randaugment_layers: 2
+randaugment_magnitude: 5
+randaugment_prob: 1.0
+readahead: true
+
+output_dir: null
+log_dir: null
+save_freq: 40
+device: cuda
+precision: bf16
+seed: 0
+resume: ""
+start_epoch: 0
+num_workers: 8
+pin_mem: true
+
+world_size: 1
+local_rank: -1
+dist_on_itp: false
+dist_url: env://
+
+hydra:
+  run:
+    dir: ./output/pretrain/${now:%Y%m%d_%H%M%S}
+  output_subdir: .hydra
+  job:
+    chdir: false
