@@ -1,0 +1,1 @@
+# MAE-for-Efficient-Scene-Text-Recognition
