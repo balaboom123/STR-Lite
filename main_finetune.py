@@ -14,8 +14,8 @@ from omegaconf import DictConfig, OmegaConf
 from torch.utils.tensorboard import SummaryWriter
 
 import util.misc as misc
-from engine_finetune import evaluate, train_one_epoch
-from src.data.lmdb_dataset import build_lmdb_dataset, lmdb_collate_fn
+from engine_finetune import evaluate, evaluate_per_benchmark, print_benchmark_results, train_one_epoch
+from src.data.lmdb_dataset import build_lmdb_dataset, build_lmdb_datasets_by_name, lmdb_collate_fn
 from src.models import vit_str_ar as vit_models
 from src.tokenizer import CharsetTokenizer
 from util.lr_decay import param_groups_lrd
@@ -228,16 +228,31 @@ def run(args: SimpleNamespace, cfg: DictConfig):
         )
 
     if getattr(args, "eval", False):
-        test_stats = evaluate(
-            data_loader_val,
-            model,
-            criterion,
-            tokenizer,
-            device,
+        eval_paths = args.val_data_path
+        benchmark_datasets = build_lmdb_datasets_by_name(
+            root_dir=eval_paths,
+            img_height=args.img_height,
+            img_width=args.img_width,
+            return_label=True,
+            max_label_length=args.max_label_length,
+            label_encoder=tokenizer.label_encoder,
+            augment=False,
+            readahead=args.readahead,
+        )
+        results = evaluate_per_benchmark(
+            benchmark_datasets=benchmark_datasets,
+            model=model,
+            criterion=criterion,
+            tokenizer=tokenizer,
+            device=device,
+            batch_size=args.batch_size,
+            num_workers=args.num_workers,
+            pin_memory=args.pin_mem,
             precision=args.precision,
             max_decode_len=args.eval_max_decode_len,
+            distributed=getattr(args, "distributed", False),
         )
-        print(f"Word accuracy on {len(dataset_val)} val images: {100.0 * test_stats['acc']:.3f}%")
+        print_benchmark_results(results)
         return
 
     print(f"Start fine-tuning for {args.epochs} epochs")

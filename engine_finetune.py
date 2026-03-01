@@ -9,6 +9,28 @@ import util.misc as misc
 from src.metrics.rec_metric import RecMetric
 
 
+class _DistributedEvalSampler(torch.utils.data.Sampler):
+    """Shard eval data across ranks without padding or dropping samples."""
+
+    def __init__(self, dataset, num_replicas=None, rank=None):
+        self.dataset = dataset
+        if num_replicas is None:
+            num_replicas = misc.get_world_size()
+        if rank is None:
+            rank = misc.get_rank()
+        self.num_replicas = int(num_replicas)
+        self.rank = int(rank)
+
+    def __iter__(self):
+        return iter(range(self.rank, len(self.dataset), self.num_replicas))
+
+    def __len__(self):
+        remaining = len(self.dataset) - self.rank
+        if remaining <= 0:
+            return 0
+        return (remaining + self.num_replicas - 1) // self.num_replicas
+
+
 def _get_autocast_kwargs(device: torch.device, precision: str):
     precision = str(precision).lower()
     if device.type != "cuda" or precision == "fp32":
@@ -161,6 +183,12 @@ def evaluate(data_loader, model, criterion, tokenizer, device, precision="fp16",
     autocast_kwargs = _get_autocast_kwargs(device, precision)
     rec_metric = RecMetric(valid_chars=tokenizer.character, is_lower=tokenizer.lower)
 
+    # Pre-register the loss meter so that every rank participates in collective
+    # sync even when the data loader is empty (e.g. rank >= dataset size).
+    metric_logger.update(loss=0.0)
+    metric_logger.meters["loss"].count = 0
+    metric_logger.meters["loss"].total = 0.0
+
     for images, labels in metric_logger.log_every(data_loader, 20, header):
         with torch.amp.autocast("cuda", **autocast_kwargs):
             images_norm = _prepare_images_for_model(images, device)
@@ -224,3 +252,98 @@ def evaluate(data_loader, model, criterion, tokenizer, device, precision="fp16",
         "correct_num_real": counts["correct_num_real"],
         "correct_num_lower": counts["correct_num_lower"],
     }
+
+
+def evaluate_per_benchmark(
+    benchmark_datasets,
+    model,
+    criterion,
+    tokenizer,
+    device,
+    batch_size=256,
+    num_workers=8,
+    pin_memory=True,
+    precision="fp16",
+    max_decode_len=None,
+    distributed=False,
+):
+    """Evaluate each benchmark dataset independently and aggregate totals.
+
+    Args:
+        benchmark_datasets: OrderedDict[name -> Dataset] from build_lmdb_datasets_by_name.
+
+    Returns:
+        dict with "per_benchmark" (OrderedDict[name -> stats]) and "total" (aggregated stats).
+    """
+    from collections import OrderedDict
+
+    from src.data.lmdb_dataset import lmdb_collate_fn
+
+    per_benchmark = OrderedDict()
+    agg_total = 0
+    agg_correct = 0
+    agg_correct_real = 0
+    agg_correct_lower = 0
+
+    for name, dataset in benchmark_datasets.items():
+        if distributed:
+            sampler = _DistributedEvalSampler(dataset)
+        else:
+            sampler = torch.utils.data.SequentialSampler(dataset)
+
+        loader = torch.utils.data.DataLoader(
+            dataset,
+            sampler=sampler,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            pin_memory=pin_memory,
+            drop_last=False,
+            collate_fn=lmdb_collate_fn,
+        )
+
+        stats = evaluate(
+            loader, model, criterion, tokenizer, device,
+            precision=precision, max_decode_len=max_decode_len,
+        )
+        per_benchmark[name] = stats
+
+        agg_total += stats["total"]
+        agg_correct += stats["correct_num"]
+        agg_correct_real += stats["correct_num_real"]
+        agg_correct_lower += stats["correct_num_lower"]
+
+    total = max(agg_total, 1)
+    total_stats = {
+        "acc": agg_correct / total,
+        "acc_real": agg_correct_real / total,
+        "acc_lower": agg_correct_lower / total,
+        "total": agg_total,
+        "correct_num": agg_correct,
+        "correct_num_real": agg_correct_real,
+        "correct_num_lower": agg_correct_lower,
+    }
+
+    return {"per_benchmark": per_benchmark, "total": total_stats}
+
+
+def print_benchmark_results(results):
+    """Pretty-print per-benchmark and total evaluation results."""
+    print("\n" + "=" * 70)
+    print(f"{'Benchmark':<25} {'Acc':>8} {'Acc_real':>10} {'Acc_lower':>10} {'Total':>8}")
+    print("-" * 70)
+    for name, stats in results["per_benchmark"].items():
+        print(
+            f"{name:<25} {stats['acc']*100:>7.2f}% "
+            f"{stats['acc_real']*100:>9.2f}% "
+            f"{stats['acc_lower']*100:>9.2f}% "
+            f"{stats['total']:>8d}"
+        )
+    print("-" * 70)
+    t = results["total"]
+    print(
+        f"{'TOTAL':<25} {t['acc']*100:>7.2f}% "
+        f"{t['acc_real']*100:>9.2f}% "
+        f"{t['acc_lower']*100:>9.2f}% "
+        f"{t['total']:>8d}"
+    )
+    print("=" * 70 + "\n")

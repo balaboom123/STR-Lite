@@ -1,0 +1,19 @@
+defaults:
+  - _self_
+
+# Optional path to a previous Hydra config (e.g. output/finetune/.../.hydra/config.yaml).
+config_resume: ""
+
+# Evaluation checkpoint path (model weights). If empty, falls back to config_resume.
+resume: ""
+
+# Test LMDB root path. If empty, falls back to config_resume.
+test_data_path:
+  - /path/to/data_lmdb_release/test
+
+# Evaluation output directory.
+output_dir: ${hydra:runtime.output_dir}
+
+hydra:
+  run:
+    dir: outputs/eval/${now:%Y-%m-%d}/${now:%H-%M-%S}

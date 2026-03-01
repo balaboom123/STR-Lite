@@ -24,7 +24,7 @@ blr: null
 min_lr: 1e-7
 warmup_epochs: 2
 
-layer_decay: 0.75
+layer_decay: 0.9
 no_layer_decay: false
 mixup: 0.0
 
@@ -50,7 +50,7 @@ precision: bf16
 seed: 0
 resume: ""
 start_epoch: 0
-save_best_only: false
+save_best_only: true
 
 num_workers: 8
 pin_mem: true
