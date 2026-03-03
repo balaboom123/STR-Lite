@@ -51,6 +51,7 @@ seed: 0
 resume: ""
 start_epoch: 0
 save_best_only: true
+save_freq: 5
 
 num_workers: 8
 pin_mem: true
