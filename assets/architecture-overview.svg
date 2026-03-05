@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="520"
+   height="310"
+   viewBox="0 0 520 310"
+   version="1.1"
+   id="svg65"
+   sodipodi:docname="architecture-overview.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview65"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="3.7645161"
+     inkscape:cx="259.92716"
+     inkscape:cy="133.74893"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg65" />
+  <defs
+     id="defs1">
+    <marker
+       id="arrow"
+       markerWidth="8"
+       markerHeight="6"
+       refX="7"
+       refY="3"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L8,3 L0,6 z"
+         fill="#888"
+         id="path1" />
+    </marker>
+  </defs>
+  <!-- ======================== -->
+  <!-- Stage 1: MAE Pretraining -->
+  <!-- ======================== -->
+  <text
+     x="260"
+     y="16"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="14px"
+     font-weight="bold"
+     fill="#28a745"
+     id="text1"><tspan
+       style="fill:#000000;fill-opacity:1"
+       id="tspan67">Stage 1: MAE Pretraining</tspan></text>
+  <!-- Scene text image -->
+  <rect
+     x="8"
+     y="58"
+     width="48"
+     height="20"
+     rx="2"
+     fill="#e0e0e0"
+     stroke="#aaa"
+     stroke-width="0.6"
+     id="rect1" />
+  <text
+     x="32"
+     y="73"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="6.5"
+     fill="#555555"
+     font-style="italic"
+     id="text2"
+     style="font-size:13.3333px">hello</text>
+  <text
+     x="32"
+     y="90"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text3"
+     style="fill:#000000;fill-opacity:1">Image</text>
+  <!-- Arrow: Image -> Patches -->
+  <line
+     x1="58"
+     y1="68"
+     x2="74"
+     y2="68"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line3" />
+  <!-- Patches grid (4x3) -->
+  <g
+     transform="translate(76, 50)"
+     id="g14">
+    <rect
+       x="0"
+       y="0"
+       width="9"
+       height="9"
+       fill="#d0d8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect3" />
+    <rect
+       x="10"
+       y="0"
+       width="9"
+       height="9"
+       fill="#c8d4e4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect4" />
+    <rect
+       x="20"
+       y="0"
+       width="9"
+       height="9"
+       fill="#bcc8dc"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect5" />
+    <rect
+       x="30"
+       y="0"
+       width="9"
+       height="9"
+       fill="#d4dce8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect6" />
+    <rect
+       x="0"
+       y="10"
+       width="9"
+       height="9"
+       fill="#c0cce0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect7" />
+    <rect
+       x="10"
+       y="10"
+       width="9"
+       height="9"
+       fill="#b8c4d8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect8" />
+    <rect
+       x="20"
+       y="10"
+       width="9"
+       height="9"
+       fill="#ccd4e4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect9" />
+    <rect
+       x="30"
+       y="10"
+       width="9"
+       height="9"
+       fill="#d8e0ec"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect10" />
+    <rect
+       x="0"
+       y="20"
+       width="9"
+       height="9"
+       fill="#c4d0e0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect11" />
+    <rect
+       x="10"
+       y="20"
+       width="9"
+       height="9"
+       fill="#b4c0d4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect12" />
+    <rect
+       x="20"
+       y="20"
+       width="9"
+       height="9"
+       fill="#c0cce0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect13" />
+    <rect
+       x="30"
+       y="20"
+       width="9"
+       height="9"
+       fill="#d0dce8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect14" />
+  </g>
+  <text
+     x="96"
+     y="90"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text14"
+     style="fill:#000000;fill-opacity:1">Patches</text>
+  <!-- Arrow: Patches -> Masked -->
+  <line
+     x1="118"
+     y1="68"
+     x2="134"
+     y2="68"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line14" />
+  <!-- Masked Patches (with X marks) -->
+  <g
+     transform="translate(136, 50)"
+     id="g31">
+    <rect
+       x="0"
+       y="0"
+       width="9"
+       height="9"
+       fill="#d0d8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect15" />
+    <rect
+       x="10"
+       y="0"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect16" />
+    <line
+       x1="11"
+       y1="1"
+       x2="18"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line16" />
+    <line
+       x1="18"
+       y1="1"
+       x2="11"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line17" />
+    <rect
+       x="20"
+       y="0"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect17" />
+    <line
+       x1="21"
+       y1="1"
+       x2="28"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line18" />
+    <line
+       x1="28"
+       y1="1"
+       x2="21"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line19" />
+    <rect
+       x="30"
+       y="0"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect19" />
+    <line
+       x1="31"
+       y1="1"
+       x2="38"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line20" />
+    <line
+       x1="38"
+       y1="1"
+       x2="31"
+       y2="8"
+       stroke="#d33"
+       stroke-width="1"
+       id="line21" />
+    <rect
+       x="0"
+       y="10"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect21" />
+    <line
+       x1="1"
+       y1="11"
+       x2="8"
+       y2="18"
+       stroke="#d33"
+       stroke-width="1"
+       id="line22" />
+    <line
+       x1="8"
+       y1="11"
+       x2="1"
+       y2="18"
+       stroke="#d33"
+       stroke-width="1"
+       id="line23" />
+    <rect
+       x="10"
+       y="10"
+       width="9"
+       height="9"
+       fill="#b8c4d8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect23" />
+    <rect
+       x="20"
+       y="10"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect24" />
+    <line
+       x1="21"
+       y1="11"
+       x2="28"
+       y2="18"
+       stroke="#d33"
+       stroke-width="1"
+       id="line24" />
+    <line
+       x1="28"
+       y1="11"
+       x2="21"
+       y2="18"
+       stroke="#d33"
+       stroke-width="1"
+       id="line25" />
+    <rect
+       x="30"
+       y="10"
+       width="9"
+       height="9"
+       fill="#d8e0ec"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect25" />
+    <rect
+       x="0"
+       y="20"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect26" />
+    <line
+       x1="1"
+       y1="21"
+       x2="8"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line26" />
+    <line
+       x1="8"
+       y1="21"
+       x2="1"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line27" />
+    <rect
+       x="10"
+       y="20"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect27" />
+    <line
+       x1="11"
+       y1="21"
+       x2="18"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line28" />
+    <line
+       x1="18"
+       y1="21"
+       x2="11"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line29" />
+    <rect
+       x="20"
+       y="20"
+       width="9"
+       height="9"
+       fill="#c0cce0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect29" />
+    <rect
+       x="30"
+       y="20"
+       width="9"
+       height="9"
+       fill="#e8e8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect30" />
+    <line
+       x1="31"
+       y1="21"
+       x2="38"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line30" />
+    <line
+       x1="38"
+       y1="21"
+       x2="31"
+       y2="28"
+       stroke="#d33"
+       stroke-width="1"
+       id="line31" />
+  </g>
+  <text
+     x="156"
+     y="90"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text31"
+     style="fill:#000000;fill-opacity:1">Masked</text>
+  <!-- Position Encoding symbol (on TOP for Stage 1) -->
+  <!-- Arrow: Pos Enc -> Encoder -->
+  <line
+     x1="177.60925"
+     y1="68"
+     x2="198.9034"
+     y2="68"
+     stroke="#888888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line34" />
+  <!-- Transformer Encoder (trapezoid) -->
+  <polygon
+     points="202,43 270,53 270,83 202,93"
+     fill="#fde0c4"
+     stroke="#e8913a"
+     stroke-width="1.2"
+     id="polygon34" />
+  <text
+     x="234.01543"
+     y="66.656395"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text34">TF</text>
+  <text
+     x="234.01543"
+     y="78.4533"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text35">Encoder</text>
+  <!-- Arrow: Encoder -> Latent -->
+  <line
+     x1="272"
+     y1="68"
+     x2="288"
+     y2="68"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line35" />
+  <!-- Latent Representation (vertical bars) -->
+  <g
+     transform="translate(290, 50)"
+     id="g37">
+    <rect
+       x="0"
+       y="0"
+       width="4"
+       height="36"
+       fill="#c8c8c8"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect35" />
+    <rect
+       x="6"
+       y="0"
+       width="4"
+       height="36"
+       fill="#b0b0b0"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect36" />
+    <rect
+       x="12"
+       y="0"
+       width="4"
+       height="36"
+       fill="#d0d0d0"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect37" />
+  </g>
+  <!-- Arrow: Latent -> Decoder -->
+  <line
+     x1="310"
+     y1="68"
+     x2="326"
+     y2="68"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line37" />
+  <!-- MAE Decoder (expanding trapezoid) -->
+  <polygon
+     points="328,53 395,41 395,95 328,83"
+     fill="#c8e6c9"
+     stroke="#28a745"
+     stroke-width="1.2"
+     id="polygon37" />
+  <text
+     x="361.60925"
+     y="67.18766"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text37">MAE</text>
+  <text
+     x="361.34363"
+     y="78.4533"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text38">Decoder</text>
+  <!-- Arrow: Decoder -> Image -->
+  <line
+     x1="397"
+     y1="68"
+     x2="413"
+     y2="68"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line38" />
+  <!-- Reconstructed Image -->
+  <rect
+     x="415"
+     y="58"
+     width="48"
+     height="20"
+     rx="2"
+     fill="#e0e0e0"
+     stroke="#aaa"
+     stroke-width="0.6"
+     id="rect38" />
+  <text
+     x="439"
+     y="73"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="6.5"
+     fill="#555555"
+     font-style="italic"
+     id="text39"
+     style="font-size:13.3333px">hello</text>
+  <text
+     x="439"
+     y="90"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text40"
+     style="fill:#000000;fill-opacity:1">Image</text>
+  <!-- ======================== -->
+  <!-- Divider -->
+  <!-- ======================== -->
+  <line
+     x1="10"
+     y1="130"
+     x2="510"
+     y2="130"
+     stroke="#ccc"
+     stroke-width="0.8"
+     stroke-dasharray="3,2"
+     id="line40" />
+  <!-- Shared Encoder annotation -->
+  <line
+     x1="194"
+     y1="96"
+     x2="194"
+     y2="163"
+     stroke="#e8913a"
+     stroke-width="0.8"
+     stroke-dasharray="2, 1.5"
+     id="line41" />
+  <line
+     x1="278"
+     y1="96"
+     x2="278"
+     y2="163"
+     stroke="#e8913a"
+     stroke-width="0.8"
+     stroke-dasharray="2, 1.5"
+     id="line42" />
+  <text
+     x="236"
+     y="137"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="6.5"
+     fill="#e8913a"
+     font-weight="bold"
+     id="text42"
+     style="font-size:10.6667px">Shared Encoder</text>
+  <!-- ======================== -->
+  <!-- Stage 2: Fine-tuning     -->
+  <!-- ======================== -->
+  <!-- Scene text image -->
+  <rect
+     x="8"
+     y="185"
+     width="48"
+     height="20"
+     rx="2"
+     fill="#e0e0e0"
+     stroke="#aaa"
+     stroke-width="0.6"
+     id="rect42" />
+  <text
+     x="32"
+     y="200"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="6.5"
+     fill="#555555"
+     font-style="italic"
+     id="text43"
+     style="font-size:13.3333px">hello</text>
+  <text
+     x="32"
+     y="216"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text44"
+     style="fill:#000000;fill-opacity:1">Image</text>
+  <!-- Arrow: Image -> Patches -->
+  <line
+     x1="58"
+     y1="195"
+     x2="74"
+     y2="195"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line44" />
+  <!-- Patches grid (4x3, all visible) -->
+  <g
+     transform="translate(76, 177)"
+     id="g55">
+    <rect
+       x="0"
+       y="0"
+       width="9"
+       height="9"
+       fill="#d0d8e8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect44" />
+    <rect
+       x="10"
+       y="0"
+       width="9"
+       height="9"
+       fill="#c8d4e4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect45" />
+    <rect
+       x="20"
+       y="0"
+       width="9"
+       height="9"
+       fill="#bcc8dc"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect46" />
+    <rect
+       x="30"
+       y="0"
+       width="9"
+       height="9"
+       fill="#d4dce8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect47" />
+    <rect
+       x="0"
+       y="10"
+       width="9"
+       height="9"
+       fill="#c0cce0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect48" />
+    <rect
+       x="10"
+       y="10"
+       width="9"
+       height="9"
+       fill="#b8c4d8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect49" />
+    <rect
+       x="20"
+       y="10"
+       width="9"
+       height="9"
+       fill="#ccd4e4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect50" />
+    <rect
+       x="30"
+       y="10"
+       width="9"
+       height="9"
+       fill="#d8e0ec"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect51" />
+    <rect
+       x="0"
+       y="20"
+       width="9"
+       height="9"
+       fill="#c4d0e0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect52" />
+    <rect
+       x="10"
+       y="20"
+       width="9"
+       height="9"
+       fill="#b4c0d4"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect53" />
+    <rect
+       x="20"
+       y="20"
+       width="9"
+       height="9"
+       fill="#c0cce0"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect54" />
+    <rect
+       x="30"
+       y="20"
+       width="9"
+       height="9"
+       fill="#d0dce8"
+       stroke="#888"
+       stroke-width="0.4"
+       id="rect55" />
+  </g>
+  <text
+     x="96"
+     y="216"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text55"
+     style="fill:#000000;fill-opacity:1">Patches</text>
+  <!-- Position Encoding symbol (bottom for Stage 2) -->
+  <!-- Arrow: Pos Enc -> Encoder -->
+  <line
+     x1="119.26478"
+     y1="195"
+     x2="198.69112"
+     y2="195"
+     stroke="#888888"
+     stroke-width="0.799501"
+     marker-end="url(#arrow)"
+     id="line58" />
+  <!-- Transformer Encoder (trapezoid) -->
+  <polygon
+     points="202,170 270,180 270,210 202,220"
+     fill="#fde0c4"
+     stroke="#e8913a"
+     stroke-width="1.2"
+     id="polygon58" />
+  <text
+     x="234.01543"
+     y="192.32819"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text58">TF</text>
+  <text
+     x="234.01541"
+     y="204.65639"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text59">Encoder</text>
+  <!-- Arrow: Encoder -> Latent -->
+  <line
+     x1="272"
+     y1="195"
+     x2="288"
+     y2="195"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line59" />
+  <!-- Latent Representation (vertical bars) -->
+  <g
+     transform="translate(290, 177)"
+     id="g61">
+    <rect
+       x="0"
+       y="0"
+       width="4"
+       height="36"
+       fill="#c8c8c8"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect59" />
+    <rect
+       x="6"
+       y="0"
+       width="4"
+       height="36"
+       fill="#b0b0b0"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect60" />
+    <rect
+       x="12"
+       y="0"
+       width="4"
+       height="36"
+       fill="#d0d0d0"
+       stroke="#999"
+       stroke-width="0.4"
+       rx="1"
+       id="rect61" />
+  </g>
+  <!-- Arrow: Latent -> AR Decoder -->
+  <line
+     x1="310"
+     y1="195"
+     x2="326"
+     y2="195"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line61" />
+  <!-- AR Decoder (expanding trapezoid) -->
+  <polygon
+     points="328,180 395,168 395,222 328,210"
+     fill="#f8d7da"
+     stroke="#dc3545"
+     stroke-width="1.2"
+     id="polygon61" />
+  <text
+     x="361.87491"
+     y="192.85947"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text61">AR</text>
+  <text
+     x="361.87488"
+     y="204.92203"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="12px"
+     font-weight="bold"
+     fill="#333333"
+     id="text62">Decoder</text>
+  <!-- Arrow: AR Decoder -> Text -->
+  <line
+     x1="397"
+     y1="195"
+     x2="413"
+     y2="195"
+     stroke="#888"
+     stroke-width="0.8"
+     marker-end="url(#arrow)"
+     id="line62" />
+  <!-- Text Output -->
+  <text
+     x="442"
+     y="199"
+     text-anchor="middle"
+     font-family="'Courier New', monospace"
+     font-size="8"
+     font-weight="bold"
+     fill="#dc3545"
+     id="text63"
+     style="font-size:13.3333px">hello</text>
+  <text
+     x="442"
+     y="216"
+     text-anchor="middle"
+     font-family="Times New Roman, Times, serif"
+     font-size="12"
+     fill="#777"
+     id="text64"
+     style="fill:#000000;fill-opacity:1">Text</text>
+  <!-- Stage 2 label at bottom -->
+  <text
+     x="260"
+     y="258"
+     text-anchor="middle"
+     font-family="'Times New Roman', Times, serif"
+     font-size="14px"
+     font-weight="bold"
+     fill="#dc3545"
+     id="text65"><tspan
+       style="fill:#000000;fill-opacity:1"
+       id="tspan68">Stage 2: Recognition Fine-tuning</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:10.6667px;writing-mode:lr-tb;direction:ltr;fill:#000000"
+     x="271.48242"
+     y="100.67695"
+     id="text66"><tspan
+       sodipodi:role="line"
+       id="tspan66"
+       x="271.48242"
+       y="100.67695" /></text>
+</svg>
