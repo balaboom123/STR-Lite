@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from functools import partial
 from typing import Sequence, Tuple
 
@@ -8,9 +7,11 @@ import torch
 import torch.nn as nn
 from timm.models.vision_transformer import Block, PatchEmbed
 
+from util.pos_embed import get_2d_sincos_pos_embed
+
 
 class ViTTinyEncoder(nn.Module):
-    """Tiny ViT encoder with learnable absolute positional embeddings (original ViT style)."""
+    """MAE-compatible tiny ViT encoder with fixed sin-cos positional embeddings."""
 
     def __init__(
         self,
@@ -36,7 +37,7 @@ class ViTTinyEncoder(nn.Module):
         num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
+        self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim), requires_grad=False)
 
         dpr = torch.linspace(0, drop_path_rate, depth).tolist()
         self.blocks = nn.ModuleList(
@@ -66,10 +67,18 @@ class ViTTinyEncoder(nn.Module):
         raise ValueError(f"patch_size must be int or length-2 sequence, got {patch_size}")
 
     def _init_weights(self):
+        grid_h, grid_w = self.patch_embed.grid_size
+        pos_embed = get_2d_sincos_pos_embed(
+            self.pos_embed.shape[-1],
+            grid_h=grid_h,
+            grid_w=grid_w,
+            cls_token=True,
+        )
+        self.pos_embed.data.copy_(torch.from_numpy(pos_embed).float().unsqueeze(0))
+
         w = self.patch_embed.proj.weight.data
         torch.nn.init.xavier_uniform_(w.view([w.shape[0], -1]))
-        nn.init.trunc_normal_(self.cls_token, std=0.02)
-        nn.init.trunc_normal_(self.pos_embed, std=0.02)
+        torch.nn.init.normal_(self.cls_token, std=0.02)
 
         for m in self.modules():
             if isinstance(m, nn.Linear):
@@ -138,11 +147,7 @@ class ViTSTRAR(nn.Module):
 
         self.encoder_proj = nn.Linear(encoder_dim, decoder_embed_dim)
         self.token_embed = nn.Embedding(self.vocab_size, decoder_embed_dim)
-        self.register_buffer(
-            "pos_embed",
-            self._build_sincos_pos_embed(self.max_seq_len, decoder_embed_dim),
-            persistent=False,
-        )
+        self.pos_embed = nn.Embedding(self.max_seq_len, decoder_embed_dim)
         self.dropout = nn.Dropout(dropout)
 
         decoder_layer = nn.TransformerDecoderLayer(
@@ -157,37 +162,6 @@ class ViTSTRAR(nn.Module):
         self.decoder = nn.TransformerDecoder(decoder_layer, num_layers=decoder_depth)
         self.decoder_norm = nn.LayerNorm(decoder_embed_dim)
         self.output_proj = nn.Linear(decoder_embed_dim, self.vocab_size)
-
-    @staticmethod
-    def _build_sincos_pos_embed(max_seq_len: int, embed_dim: int) -> torch.Tensor:
-        if embed_dim % 2 != 0:
-            raise ValueError(f"decoder_embed_dim must be even for sin-cos embedding, got {embed_dim}")
-
-        positions = torch.arange(max_seq_len, dtype=torch.float32).unsqueeze(1)
-        div_term = torch.exp(
-            torch.arange(0, embed_dim, 2, dtype=torch.float32) * (-math.log(10000.0) / embed_dim)
-        )
-
-        pos_embed = torch.zeros(max_seq_len, embed_dim, dtype=torch.float32)
-        pos_embed[:, 0::2] = torch.sin(positions * div_term)
-        pos_embed[:, 1::2] = torch.cos(positions * div_term)
-        return pos_embed
-
-    def _lookup_pos_embed(self, positions: torch.Tensor) -> torch.Tensor:
-        if positions.numel() == 0:
-            return torch.empty(
-                *positions.shape,
-                self.pos_embed.shape[1],
-                device=positions.device,
-                dtype=self.pos_embed.dtype,
-            )
-        if positions.max().item() >= self.max_seq_len:
-            raise ValueError(
-                f"Position index {positions.max().item()} exceeds max_seq_len {self.max_seq_len}"
-            )
-        flat = positions.reshape(-1)
-        pos = self.pos_embed.index_select(0, flat)
-        return pos.view(*positions.shape, -1)
 
     def _encode(self, images):
         num_patches = self.encoder.patch_embed.num_patches
@@ -276,9 +250,8 @@ class ViTSTRAR(nn.Module):
             )
 
         seq_len = tgt_input.shape[1]
-        positions = torch.arange(seq_len, device=tgt_input.device, dtype=torch.long).unsqueeze(0)
-        positions = positions.expand(tgt_input.shape[0], -1)
-        tgt = self.token_embed(tgt_input) + self._lookup_pos_embed(positions)
+        positions = torch.arange(seq_len, device=tgt_input.device).unsqueeze(0)
+        tgt = self.token_embed(tgt_input) + self.pos_embed(positions)
         tgt = self.dropout(tgt)
 
         tgt = tgt.transpose(0, 1)
@@ -314,9 +287,9 @@ class ViTSTRAR(nn.Module):
 
         for _ in range(max_len - 1):
             pos_idx = generated.shape[1] - 1
-            pos = torch.full((B, 1), pos_idx, device=device, dtype=torch.long)
+            pos = torch.full((1, 1), pos_idx, device=device, dtype=torch.long).expand(B, 1)
             current_token = generated[:, -1:]
-            step_hidden = self.token_embed(current_token) + self._lookup_pos_embed(pos)
+            step_hidden = self.token_embed(current_token) + self.pos_embed(pos)
             step_hidden = self.dropout(step_hidden).transpose(0, 1)
 
             decoded_last = self._decode_one_token_with_cache(
