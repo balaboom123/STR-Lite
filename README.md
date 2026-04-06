@@ -15,7 +15,7 @@ Tiny MAE pretraining + autoregressive decoder fine-tuning for scene text recogni
 - [5. Quick Start](#5-quick-start)
 - [6. Experiments](#6-experiments)
   - [6.1 Model Architecture](#61-model-architecture)
-  - [6.2 Experimental Results](#62-experimental-results)
+  - [6.2 Results](#62-results)
 - [7. Output Files](#7-output-files)
 - [8. Project Structure](#8-project-structure)
 
