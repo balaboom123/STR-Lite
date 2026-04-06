@@ -123,21 +123,17 @@ STRLite follows a two-stage design for scene text recognition:
 1. **MAE pretraining** learns visual representations from unlabeled images by reconstructing masked patches.
 2. **Autoregressive fine-tuning** reuses the pretrained ViT encoder and trains a Transformer decoder with teacher forcing to predict text tokens.
 
-```html
 <div align="center">
   <img src="assets/architecture-overview.svg" width="800" />
 </div>
-```
 
 ### 6.2 Results
 
 Results of STRLite Accuracy with or without MAE pretraining on six common Datasets.
 
-```html
 <div align="center">
   <img src="assets/results.png" width="800" />
 </div>
-```
 
 ## 7. Output Files
 
