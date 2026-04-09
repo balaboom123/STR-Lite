@@ -10,15 +10,16 @@ STRLite trains scene text recognition models in two stages: MAE pretraining for 
 
 </div>
 
-## Key Features
+## ✨ Key Features
 
 | Feature | Description |
-| ------- | ----------- |
-| Two-stage STR training | MAE pretraining on unlabeled images, then autoregressive fine-tuning on labeled text images |
-| Standard LMDB support | Uses common LMDB keys (`num-samples`, `image-*`, `label-*`) with recursive dataset discovery |
-| Hydra-based experiments | Config-driven runs for pretraining, fine-tuning, and standalone evaluation |
-| Robust evaluation | Reports `acc`, `acc_real`, and `acc_lower` with per-benchmark breakdown |
-| Efficient inference | Greedy autoregressive decoding with cache support |
+| :--- | :--- |
+| 🪶 **Ultra-Lightweight** | Requires only **6M parameters**, making it highly cost-effective for domain-specific adaptation and real-world deployment. |
+| 🔄 **Two-Stage Pipeline** | **MAE pretraining** on unlabeled images, followed by **autoregressive fine-tuning** on labeled text images. |
+| 🗄️ **Standard LMDB Support** | Uses common LMDB keys (`num-samples`, `image-*`, `label-*`) with automatic recursive dataset discovery. |
+| ⚙️ **Hydra-Driven Workflow** | Fully config-driven execution for pretraining, fine-tuning, and standalone evaluation. |
+| 📊 **Robust Evaluation** | Comprehensive reporting including `acc`, `acc_real`, and `acc_lower` with a detailed per-benchmark breakdown. |
+| ⚡ **Efficient Inference** | Implements greedy autoregressive decoding with **per-layer key-value (KV) caching** to accelerate inference. |
 
 ## 1. Overview
 
@@ -36,11 +37,11 @@ See [INSTALLATION.md](INSTALLATION.md).
 
 See [DATASET.md](DATASET.md).
 
-## 5. Quick Start
+## 4. Quick Start
 
 The end-to-end workflow is: pretrain a MAE encoder, fine-tune with an autoregressive decoder, then evaluate a checkpoint on validation or test benchmarks.
 
-### 5.1 MAE Pretraining
+### 4.1 MAE Pretraining
 
 ```bash
 python main_pretrain.py data_path='[/path/to/lmdb_pretrain]'
@@ -53,7 +54,7 @@ torchrun --nproc_per_node=8 main_pretrain.py \
   data_path='[/path/to/lmdb_pretrain]'
 ```
 
-### 5.2 Fine-tuning
+### 4.2 Fine-tuning
 
 ```bash
 python main_finetune.py \
@@ -62,7 +63,7 @@ python main_finetune.py \
   pretrained_mae=/path/to/pretrain_checkpoint.pth
 ```
 
-### 5.3 Evaluation
+### 4.3 Evaluation
 
 Eval via fine-tune script (evaluates `val_data_path`):
 
@@ -82,9 +83,9 @@ python eval.py \
   test_data_path='[/path/to/lmdb_test]'
 ```
 
-## 6. Experiments
+## 5. Experiments
 
-### 6.1. Pre-training 
+### 5.1. Pre-training 
 - ViT-Tiny pretrained on U14M-U.
 
 | Variants | Embedding | Depth | Heads | Parameters |
@@ -94,7 +95,7 @@ python eval.py \
 - If you want to pre-train the ViT backbone on your own dataset, check [pre-training](pretrain.md)
 
 
-### 6.2. Fine-tuning 
+### 5.2. Fine-tuning 
 - STRLite finetuned on U14M-L-Filtered.
 
 | Variants | Acc on Common Benchmarks | Acc on U14M-Benchmarks |
@@ -103,15 +104,16 @@ python eval.py \
 
 - If you want to fine-tune STRLite on your own dataset, check [fine-tuning](finetune.md)
 
-### 6.3 Results
+### 5.3 Results
 
 Results of STRLite Accuracy with or without MAE pretraining on six common Datasets.
 
-**TABLE I: STRLITE ACCURACY (%) TRAIN ON U14M-L-FILTERED WITH AND WITHOUT U14M-U PRETRAINING.**
+**STRLITE ACCURACY (%) TRAIN ON U14M-L-FILTERED WITH AND WITHOUT U14M-U PRETRAINING.**
 
 | Subset | w/ pretrain | w/o pretrain |
 | ------ | ----------- | ------------ |
-| **Common STR benchmarks** | | |
+| **Common STR benchmarks** |
+| ------------------------- |
 | CUTE80 | 95.83 | 94.79 |
 | IC13 | 96.85 | 96.50 |
 | IC15 | 86.80 | 86.25 |
@@ -119,7 +121,8 @@ Results of STRLite Accuracy with or without MAE pretraining on six common Datase
 | SVT | 95.36 | 94.90 |
 | SVTP | 92.40 | 89.77 |
 | **Weighted avg.** | **93.82** | **93.12** |
-| **U14M benchmarks** | | |
+| **U14M benchmarks** |
+| ------------------- |
 | artistic | 67.78 | 62.11 |
 | contextless | 78.95 | 77.43 |
 | curve | 82.19 | 78.97 |
