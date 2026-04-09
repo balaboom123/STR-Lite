@@ -4,9 +4,10 @@
 
 STRLite trains scene text recognition models in two stages: MAE pretraining for visual representation learning, followed by autoregressive decoder fine-tuning for text generation.
 
-
 <div align="center">
   <img src="assets/architecture-overview.svg" width="800" />
+</div>
+
 </div>
 
 ## ✨ Key Features
