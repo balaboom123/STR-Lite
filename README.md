@@ -110,11 +110,10 @@ Results of STRLite Accuracy (%) with or without MAE pretraining on six common Da
 
 **STRLITE ACCURACY (%) TRAIN ON U14M-L-FILTERED WITH AND WITHOUT U14M-U PRETRAINING.**
 
-| Subset | w/ pretrain | w/o pretrain |
-| ------ | ----------- | ------------ |
-
 **Common STR benchmarks**
 
+| Subset | w/ pretrain | w/o pretrain |
+| ------ | ----------- | ------------ |
 | CUTE80 | 95.83 | 94.79 |
 | IC13 | 96.85 | 96.50 |
 | IC15 | 86.80 | 86.25 |
@@ -125,6 +124,8 @@ Results of STRLite Accuracy (%) with or without MAE pretraining on six common Da
 
 **U14M benchmarks**
 
+| Subset | w/ pretrain | w/o pretrain |
+| ------ | ----------- | ------------ |
 | artistic | 67.78 | 62.11 |
 | contextless | 78.95 | 77.43 |
 | curve | 82.19 | 78.97 |
