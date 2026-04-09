@@ -58,24 +58,3 @@ python main_pretrain.py --help
 python main_finetune.py --help
 python eval.py --help
 ```
-
-## 6. Common Installation Issues
-
-1. CUDA not available
-
-- Check whether your GPU driver and PyTorch CUDA build are compatible
-- For quick functional checks, run a small CPU-only test first
-
-2. Package conflicts
-
-- Prefer a fresh virtual environment
-- Avoid sharing one environment across multiple deep learning projects
-
-3. `bf16` not supported
-
-- Override precision in config or CLI: `precision=fp16` or `precision=fp32`
-
-## 7. Next Step
-
-1. Read dataset format details: [DATASET.md](DATASET.md)
-2. Return to the README Quick Start and run pretrain/finetune/eval
