@@ -108,8 +108,6 @@ python eval.py \
 
 Results of STRLite Accuracy (%) with or without MAE pretraining on six common Datasets.
 
-**STRLITE ACCURACY (%) TRAIN ON U14M-L-FILTERED WITH AND WITHOUT U14M-U PRETRAINING.**
-
 **Common STR benchmarks**
 
 | Subset | w/ pretrain | w/o pretrain |
