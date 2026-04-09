@@ -2,75 +2,43 @@
 
 # STRLite: MAE-Pretrained Scene Text Recognition
 
-Tiny MAE pretraining + autoregressive decoder fine-tuning for scene text recognition (STR), using standard LMDB datasets and Hydra configs.
+STRLite trains scene text recognition models in two stages: MAE pretraining for visual representation learning, followed by autoregressive decoder fine-tuning for text generation.
+
+<div align="center">
+  <img src="assets/architecture-overview.svg" width="800" />
+</div>
 
 </div>
 
-## Contents
+## Key Features
 
-- [1. Overview](#1-overview)
-- [2. Environment Setup](#2-environment-setup)
-- [3. Dataset Format](#3-dataset-format)
-- [4. Training Pipeline](#4-training-pipeline)
-- [5. Quick Start](#5-quick-start)
-- [6. Experiments](#6-experiments)
-  - [6.1 Model Architecture](#61-model-architecture)
-  - [6.2 Results](#62-results)
-- [7. Output Files](#7-output-files)
-- [8. Project Structure](#8-project-structure)
+| Feature | Description |
+| ------- | ----------- |
+| Two-stage STR training | MAE pretraining on unlabeled images, then autoregressive fine-tuning on labeled text images |
+| Standard LMDB support | Uses common LMDB keys (`num-samples`, `image-*`, `label-*`) with recursive dataset discovery |
+| Hydra-based experiments | Config-driven runs for pretraining, fine-tuning, and standalone evaluation |
+| Robust evaluation | Reports `acc`, `acc_real`, and `acc_lower` with per-benchmark breakdown |
+| Efficient inference | Greedy autoregressive decoding with cache support |
 
 ## 1. Overview
 
-This project trains STR in two stages:
+Core code paths:
 
-1. MAE pretraining (image reconstruction, no text labels required).
-2. Fine-tuning with an autoregressive Transformer decoder (teacher forcing with labeled text).
-
-Default setup:
-
-- Input image size: `32 x 128`
-- Patch size: `4 x 8` (`8 x 16 = 128` image tokens)
-- Encoder: Tiny ViT (`depth=12`, `embed_dim=192`, `heads=12`)
-- MAE decoder (pretrain only): `depth=1`, `embed_dim=96`, `heads=3`
-- Fine-tune decoder: autoregressive Transformer decoder
-- Inference: greedy decode with per-layer cache
-- Charset dictionary: `util/EN_symbol_dict.txt`
+- Pretraining entry: `main_pretrain.py`
+- Fine-tuning entry: `main_finetune.py`
+- Standalone evaluation: `eval.py`
 
 ## 2. Environment Setup
 
-Requirements:
-
-- Python 3.10+ (recommended)
-- CUDA GPU (recommended for training)
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
+See [INSTALLATION.md](INSTALLATION.md).
 
 ## 3. Dataset Format
 
-Each LMDB should include:
-
-- `num-samples`
-- `image-000000001`, `image-000000002`, ...
-- `label-000000001`, `label-000000002`, ... (required for fine-tuning and evaluation)
-
-Path behavior:
-
-- `data_path`, `train_data_path`, `val_data_path`, `test_data_path` can be one path or a list of paths.
-- Loader recursively finds any nested folder containing `data.mdb`.
-
-## 4. Training Pipeline
-
-1. Pretrain with MAE: `main_pretrain.py`
-2. Fine-tune AR decoder: `main_finetune.py`
-3. Evaluate checkpoint:
-   - quick eval via `main_finetune.py eval=true` (uses `val_data_path`)
-   - standalone eval via `eval.py` (uses `test_data_path`)
+See [DATASET.md](DATASET.md).
 
 ## 5. Quick Start
+
+The end-to-end workflow is: pretrain a MAE encoder, fine-tune with an autoregressive decoder, then evaluate a checkpoint on validation or test benchmarks.
 
 ### 5.1 MAE Pretraining
 
@@ -116,48 +84,47 @@ python eval.py \
 
 ## 6. Experiments
 
-### 6.1 Model Architecture
+### 6.1. Pre-training 
+- ViT-Tiny pretrained on U14M-U.
 
-STRLite follows a two-stage design for scene text recognition:
+| Variants | Embedding | Depth | Heads | Parameters |
+| -------- | --------- | ----- | ----- | ---------- |
+| ViT-Tiny | 192       | 12    | 12    | 6M         |
 
-1. **MAE pretraining** learns visual representations from unlabeled images by reconstructing masked patches.
-2. **Autoregressive fine-tuning** reuses the pretrained ViT encoder and trains a Transformer decoder with teacher forcing to predict text tokens.
+- If you want to pre-train the ViT backbone on your own dataset, check [pre-training](pretrain.md)
 
-<div align="center">
-  <img src="assets/architecture-overview.svg" width="800" />
-</div>
 
-### 6.2 Results
+### 6.2. Fine-tuning 
+- STRLite finetuned on U14M-L-Filtered.
+
+| Variants | Acc on Common Benchmarks | Acc on U14M-Benchmarks |
+| -------- | ------------------------ | ---------------------- |
+| STRLite  | 93.82                    | 81.03                  |
+
+- If you want to fine-tune STRLite on your own dataset, check [fine-tuning](finetune.md)
+
+### 6.3 Results
 
 Results of STRLite Accuracy with or without MAE pretraining on six common Datasets.
 
-<div align="center">
-  <img src="assets/results.png" width="800" />
-</div>
+**TABLE I: STRLITE ACCURACY (%) TRAIN ON U14M-L-FILTERED WITH AND WITHOUT U14M-U PRETRAINING.**
 
-## 7. Output Files
-
-Hydra creates timestamped output folders.
-
-Common artifacts:
-
-- checkpoints: `checkpoint-*.pth`, `checkpoint-last.pth`
-- training logs: `log.txt`
-- tensorboard logs
-- standalone eval report: `eval_results.json`
-
-## 8. Project Structure
-
-- `main_pretrain.py`: pretraining entry
-- `engine_pretrain.py`: pretraining epoch loop
-- `main_finetune.py`: fine-tuning entry
-- `engine_finetune.py`: fine-tune and evaluation loops
-- `eval.py`: standalone benchmark evaluation
-- `conf/pretrain.yaml`: pretraining config
-- `conf/finetune.yaml`: fine-tuning config
-- `conf/eval.yaml`: eval config
-- `src/models/mae_vit_tiny_str.py`: MAE model
-- `src/models/vit_str_ar.py`: AR STR model
-- `src/data/lmdb_dataset.py`: dataset and collate
-- `src/tokenizer.py`: BOS/EOS/PAD tokenizer
-- `src/metrics/rec_metric.py`: metrics (`acc`, `acc_real`, `acc_lower`)
+| Subset | w/ pretrain | w/o pretrain |
+| ------ | ----------- | ------------ |
+| **Common STR benchmarks** | | |
+| CUTE80 | 95.83 | 94.79 |
+| IC13 | 96.85 | 96.50 |
+| IC15 | 86.80 | 86.25 |
+| IIIT5k | 96.97 | 96.47 |
+| SVT | 95.36 | 94.90 |
+| SVTP | 92.40 | 89.77 |
+| **Weighted avg.** | **93.82** | **93.12** |
+| **U14M benchmarks** | | |
+| artistic | 67.78 | 62.11 |
+| contextless | 78.95 | 77.43 |
+| curve | 82.19 | 78.97 |
+| general | 81.07 | 79.96 |
+| multi oriented | 82.91 | 78.57 |
+| multi words | 76.72 | 74.31 |
+| salient | 78.17 | 75.33 |
+| **Weighted avg.** | **81.03** | **79.88** |
