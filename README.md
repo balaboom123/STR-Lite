@@ -1,42 +1,47 @@
-# MAE-for-Efficient-Scene-Text-Recognition
+<div align="center">
 
-Tiny MAE pretraining + autoregressive Transformer-decoder fine-tuning for scene text recognition using **normal LMDB**, managed by **Hydra** configs.
+# STRLite: MAE-Pretrained Scene Text Recognition
 
-## Core Setup
+STRLite trains scene text recognition models in two stages: MAE pretraining for visual representation learning, followed by autoregressive decoder fine-tuning for text generation.
 
-- Input: `32 x 128` RGB
-- Patch: `4 x 8` -> `8 x 16 = 128` tokens
-- Tiny encoder: `depth=12`, `embed_dim=192`, `heads=12`
-- MAE decoder (pretrain): `depth=1`, `embed_dim=96`, `heads=3`
-- Positional embedding (pretrain/fine-tune encoder): fixed 2D sin-cos (original MAE style)
-- Fine-tune head: ViT encoder -> TransformerDecoder (autoregressive) -> token logits
-- Inference: greedy autoregressive decoding with per-layer cache
-- Character dict: `util/EN_symbol_dict.txt`
-- Fixed runtime settings: `max_label_length=25`, `seed=0`, `device=cuda`, `precision=bf16`
-- Data transfer optimization: CPU batches use `uint8` images and `int16` text ids, then cast/normalize on GPU for training.
+<div align="center">
+  <img src="assets/architecture-overview.svg" width="800" />
+</div>
 
-## Hydra Configs
+</div>
 
-- Pretrain config: `conf/pretrain.yaml`
-- Fine-tune config: `conf/finetune.yaml`
+## ✨ Key Features
 
-## LMDB Format
+| Feature | Description |
+| :--- | :--- |
+| 🪶 **Ultra-Lightweight** | Requires only **6M parameters**, making it highly cost-effective for domain-specific adaptation and real-world deployment. |
+| 🔄 **Two-Stage Pipeline** | **MAE pretraining** on unlabeled images, followed by **autoregressive fine-tuning** on labeled text images. |
+| 🗄️ **Standard LMDB Support** | Uses common LMDB keys (`num-samples`, `image-*`, `label-*`) with automatic recursive dataset discovery. |
+| ⚙️ **Hydra-Driven Workflow** | Fully config-driven execution for pretraining, fine-tuning, and standalone evaluation. |
+| 📊 **Robust Evaluation** | Comprehensive reporting including `acc`, `acc_real`, and `acc_lower` with a detailed per-benchmark breakdown. |
+| ⚡ **Efficient Inference** | Implements greedy autoregressive decoding with **per-layer key-value (KV) caching** to accelerate inference. |
 
-Each LMDB must contain:
+## 1. Overview
 
-- `num-samples`
-- `image-000000001`, `image-000000002`, ...
-- `label-000000001`, `label-000000002`, ... (required for fine-tuning)
+Core code paths:
 
-`data_path`, `train_data_path`, and `val_data_path` support one or many roots. Any nested folder containing `data.mdb` is discovered recursively.
+- Pretraining entry: `main_pretrain.py`
+- Fine-tuning entry: `main_finetune.py`
+- Standalone evaluation: `eval.py`
 
-## Install
+## 2. Environment Setup
 
-```bash
-pip install -r requirements.txt
-```
+See [INSTALLATION.md](INSTALLATION.md).
 
-## Pretraining (Hydra)
+## 3. Dataset Format
+
+See [DATASET.md](DATASET.md).
+
+## 4. Quick Start
+
+The end-to-end workflow is: pretrain a MAE encoder, fine-tune with an autoregressive decoder, then evaluate a checkpoint on validation or test benchmarks.
+
+### 4.1 MAE Pretraining
 
 ```bash
 python main_pretrain.py data_path='[/path/to/lmdb_pretrain]'
@@ -46,37 +51,84 @@ Distributed example:
 
 ```bash
 torchrun --nproc_per_node=8 main_pretrain.py \
-  data_path='[/path/to/lmdb_pretrain]' \
-  output_dir=./output/pretrain_tiny \
-  log_dir=./output/pretrain_tiny
+  data_path='[/path/to/lmdb_pretrain]'
 ```
 
-## Fine-tuning (Autoregressive)
+### 4.2 Fine-tuning
 
 ```bash
 python main_finetune.py \
   train_data_path='[/path/to/lmdb_train]' \
   val_data_path='[/path/to/lmdb_val]' \
-  pretrained_mae=./output/pretrain_tiny/checkpoint-last.pth
+  pretrained_mae=/path/to/pretrain_checkpoint.pth
 ```
 
-Evaluate:
+### 4.3 Evaluation
+
+Eval via fine-tune script (evaluates `val_data_path`):
 
 ```bash
 python main_finetune.py \
   train_data_path='[/path/to/lmdb_train]' \
   val_data_path='[/path/to/lmdb_val]' \
-  resume=./output/finetune/checkpoint-last.pth \
+  resume=/path/to/finetune_checkpoint.pth \
   eval=true
 ```
 
-## Key Files
+Standalone eval (recommended for benchmark reporting):
 
-- `main_pretrain.py`: Hydra entrypoint for MAE pretraining
-- `main_finetune.py`: Hydra entrypoint for autoregressive fine-tuning
-- `conf/pretrain.yaml`: pretraining config
-- `conf/finetune.yaml`: fine-tuning config
-- `src/models/mae_vit_tiny_str.py`: tiny MAE
-- `src/models/vit_str_ar.py`: ViT-tiny + TransformerDecoder (AR)
-- `src/tokenizer.py`: BOS/EOS/PAD tokenizer with dict-backed charset
-- `src/metrics/rec_metric.py`: eval metrics (`acc`, `acc_real`, `acc_lower`)
+```bash
+python eval.py \
+  resume=/path/to/finetune_checkpoint.pth \
+  test_data_path='[/path/to/lmdb_test]'
+```
+
+## 5. Experiments
+
+### 5.1. Pre-training 
+- ViT-Tiny pretrained on U14M-U.
+
+| Variants | Embedding | Depth | Heads | Parameters |
+| -------- | --------- | ----- | ----- | ---------- |
+| ViT-Tiny | 192       | 12    | 12    | 6M         |
+
+- If you want to pre-train the ViT backbone on your own dataset, check [pre-training](pretrain.md)
+
+
+### 5.2. Fine-tuning 
+- STRLite finetuned on U14M-L-Filtered.
+
+| Variants | Acc on Common Benchmarks | Acc on U14M-Benchmarks |
+| -------- | ------------------------ | ---------------------- |
+| STRLite  | 93.82                    | 81.03                  |
+
+- If you want to fine-tune STRLite on your own dataset, check [fine-tuning](finetune.md)
+
+### 5.3 Results
+
+Results of STRLite Accuracy (%) with or without MAE pretraining on six common Datasets.
+
+**Common STR benchmarks**
+
+| Subset | w/ pretrain | w/o pretrain |
+| ------ | ----------- | ------------ |
+| CUTE80 | 95.83 | 94.79 |
+| IC13 | 96.85 | 96.50 |
+| IC15 | 86.80 | 86.25 |
+| IIIT5k | 96.97 | 96.47 |
+| SVT | 95.36 | 94.90 |
+| SVTP | 92.40 | 89.77 |
+| **Weighted avg.** | **93.82** | **93.12** |
+
+**U14M benchmarks**
+
+| Subset | w/ pretrain | w/o pretrain |
+| ------ | ----------- | ------------ |
+| artistic | 67.78 | 62.11 |
+| contextless | 78.95 | 77.43 |
+| curve | 82.19 | 78.97 |
+| general | 81.07 | 79.96 |
+| multi oriented | 82.91 | 78.57 |
+| multi words | 76.72 | 74.31 |
+| salient | 78.17 | 75.33 |
+| **Weighted avg.** | **81.03** | **79.88** |
