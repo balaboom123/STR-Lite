@@ -4,7 +4,7 @@
 <!-- Animated Header -->
 <img src="https://balaboom123-capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=STR-Lite&fontSize=42&fontColor=fff&animation=twinkling&fontAlignY=32&desc=MAE%20pretraining%20ViT%20in%20Lightweight&descAlignY=52&descSize=18" alt="SignDATA – Data Pipeline for Sign Language Translation"/>
 
-STRLite trains scene text recognition models in two stages: MAE pretraining for visual representation learning, followed by autoregressive decoder fine-tuning for text generation.
+STR-Lite trains scene text recognition models in two stages: MAE pretraining for visual representation learning, followed by autoregressive decoder fine-tuning for text generation.
 
 <div align="center">
   <img src="assets/architecture-overview.svg" width="800" />
@@ -32,17 +32,17 @@ We describe how to prepare the datasets in [DATASET.md](DATASET.md).
 - To pre-train the ViT backbone on your own dataset, see [§3.1 MAE Pretraining](#31-mae-pretraining).
 
 ### 2.2. Fine-tuning
-- STRLite fine-tuned on U14M-L-Filtered.
+- STR-Lite fine-tuned on U14M-L-Filtered.
 
   | Variants | Acc on Common Benchmarks | Acc on U14M-Benchmarks | Download |
   | -------- | :----------------------: | :--------------------: | :------: |
-  | STRLite  | 93.82 | 81.03 | [HuggingFace](https://huggingface.co/balaboom123/STRLite/resolve/main/finetune/checkpoint-best.pth) |
+  | STR-Lite | 93.82 | 81.03 | [HuggingFace](https://huggingface.co/balaboom123/STRLite/resolve/main/finetune/checkpoint-best.pth) |
 
 - To fine-tune or evaluate the model, see [§3.2 Fine-tuning](#32-fine-tuning) and [§3.3 Evaluation](#33-evaluation).
 
 ### 2.3 Results
 
-Results of STRLite Accuracy (%) with or without MAE pretraining on six common Datasets.
+Results of STR-Lite Accuracy (%) with or without MAE pretraining on six common Datasets.
 
 <table>
 <tr>
